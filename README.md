@@ -9,11 +9,21 @@
   # 启动
   sh ./script/start.sh
   ```
+浏览器打开 http://localhost
+
+布署到线上https证书
+
+1、把证书下载到docker-compose/etc/nginx/ca目录
+
+2、请修改docker-compose/etc/nginx/conf.d/nginx.conf1为nginx.conf 并修改证书路径，删除dev.conf
+
 有任何不明白加V
 
 ![cover](./src/assets/customer.png)
 
-在线体验https://ai.beargpt.online
+在线体验 https://ai.beargpt.online
+
+更多学习资源 https://beargpt.online
 ## 赞助
 
 如果你觉得这个项目对你有帮助，并且情况允许的话，可以给我一点点支持，非常感谢支持～
