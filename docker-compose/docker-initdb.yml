@@ -1,0 +1,16 @@
+version: '3'
+services:
+  init_mysql:
+    image: mysql:5.7
+    ports:
+    - "3306:3306"
+    volumes:
+    - ./data/mysql:/var/lib/mysql
+    - ./logs/mysql:/var/log/mysql
+    - ./etc/mysql:/etc/mysql
+    - ./database/base.sql:/docker-entrypoint-initdb.d/base.sql:ro
+    environment:
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}

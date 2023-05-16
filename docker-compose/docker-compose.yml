@@ -1,0 +1,84 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql
+      - ./etc/mysql:/etc/mysql
+    environment:
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      core_network:
+        aliases:
+          - node.mysql
+  app:
+    image: ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+    ports:
+      - 3002:3002
+    volumes:
+      - ./app/uploads:/app/uploads
+      - ./app/log:/app/log
+      - ./.env:/app/.env
+    depends_on:
+      - mysql
+    environment:
+      # 二选一
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      # 二选一
+      OPENAI_ACCESS_TOKEN:
+      # API接口地址，可选，设置 OPENAI_API_KEY 时可用
+      OPENAI_API_BASE_URL: https://api.openai.com
+      # API模型，可选，设置 OPENAI_API_KEY 时可用
+      OPENAI_API_MODEL: ${OPENAI_API_MODEL}
+      # 反向代理，可选
+      API_REVERSE_PROXY:
+      # 访问权限密钥，可选
+      AUTH_SECRET_KEY: 123456
+      # 每小时最大请求次数，可选，默认无限
+      MAX_REQUEST_PER_HOUR: 0
+      # 超时，单位毫秒，可选
+      TIMEOUT_MS: 60000
+      # Socks代理，可选，和 SOCKS_PROXY_PORT 一起时生效
+      SOCKS_PROXY_HOST:
+      # Socks代理端口，可选，和 SOCKS_PROXY_HOST 一起时生效
+      SOCKS_PROXY_PORT:
+      # Socks代理用户名，可选，和 SOCKS_PROXY_HOST & SOCKS_PROXY_PORT 一起时生效
+      SOCKS_PROXY_USERNAME:
+      # Socks代理密码，可选，和 SOCKS_PROXY_HOST & SOCKS_PROXY_PORT 一起时生效
+      SOCKS_PROXY_PASSWORD:
+      # HTTPS_PROXY 代理，可选
+      HTTPS_PROXY:
+    networks:
+      core_network:
+        aliases:
+          - node.app
+  nginx:
+    image: ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+    ports:
+      - '80:80'
+      - '443:443'
+    expose:
+      - '80'
+    depends_on:
+      - app
+    volumes:
+      - ./etc/nginx:/etc/nginx/conf
+      - /etc/localtime:/etc/localtime
+    networks:
+      core_network:
+        aliases:
+          - node.nginx
+    entrypoint:
+      - nginx
+      - -g
+      - daemon off;
+networks:
+  core_network:
+    driver: bridge
