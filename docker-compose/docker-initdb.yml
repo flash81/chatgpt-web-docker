@@ -10,7 +10,7 @@ services:
     - ./etc/mysql:/etc/mysql
     - ./database/base.sql:/docker-entrypoint-initdb.d/base.sql:ro
     environment:
-      MYSQL_USER: ${DB_USER}
+      MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
